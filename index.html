@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Organizador de estudos para ENEM e ITA com cronograma, revisão espaçada, simulados, videoaulas e correção de redação por IA." />
+  <meta name="description" content="Organizador de estudos para ENEM e ITA com cronograma, revisão espaçada, simulados, videoaulas, Tutor IA local e correção experimental de redação." />
   <meta name="theme-color" content="#0b1020" />
   <title>FocoVest — Organizador ENEM & ITA</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -26,7 +26,8 @@
         <button class="nav-item" data-view="revisao"><span>↻</span> Revisão Anki</button>
         <button class="nav-item" data-view="simulados"><span>◉</span> Simulados e provas</button>
         <button class="nav-item" data-view="aulas"><span>▶</span> Videoaulas gratuitas</button>
-        <button class="nav-item" data-view="redacao"><span>✦</span> Corretor de redação IA</button>
+        <button class="nav-item" data-view="tutor"><span>✦</span> Tutor IA gratuito</button>
+        <button class="nav-item" data-view="redacao"><span>✎</span> Corretor de redação local</button>
         <button class="nav-item" data-view="ferramentas"><span>⌁</span> Ferramentas</button>
       </nav>
 
@@ -209,8 +210,99 @@
           <div id="videoLibrary" class="video-grid"></div>
         </section>
 
+
+        <section class="view" id="view-tutor">
+          <div class="page-intro">
+            <div>
+              <span class="section-kicker">IA executada no seu dispositivo</span>
+              <h2>Tutor IA gratuito</h2>
+              <p>Faça perguntas, peça explicações, exercícios, resumos e flashcards. O modelo roda no navegador, sem chave de API e sem cobrança por mensagem.</p>
+            </div>
+            <span class="ai-badge local-ai-badge">◆ IA local</span>
+          </div>
+
+          <div class="local-ai-grid">
+            <article class="panel local-ai-setup">
+              <div class="panel-head">
+                <div><span class="section-kicker">Configuração</span><h3>Preparar o tutor</h3></div>
+                <span class="local-status" id="localAiStatus">Não iniciado</span>
+              </div>
+
+              <label>Modelo local
+                <select id="localModelSelect">
+                  <option value="Qwen2.5-0.5B-Instruct-q4f16_1-MLC">Leve — Qwen 0.5B</option>
+                  <option value="Qwen2.5-1.5B-Instruct-q4f16_1-MLC" selected>Recomendado — Qwen 1.5B</option>
+                </select>
+              </label>
+              <button class="primary-btn full" id="loadLocalAi">Carregar IA no navegador</button>
+
+              <div class="model-progress hidden" id="modelProgressWrap">
+                <div class="progress-track"><div class="progress-fill" id="modelProgressBar"></div></div>
+                <small id="modelProgressText">Preparando o modelo...</small>
+              </div>
+
+              <div class="compatibility-box" id="webgpuInfo">
+                <b>Requisitos</b>
+                <p>Google Chrome ou Microsoft Edge atualizado, conexão para o primeiro download e dispositivo com WebGPU.</p>
+              </div>
+
+              <div class="privacy-box">
+                <b>Privacidade</b>
+                <p>As perguntas e respostas são processadas localmente. O modelo pode permanecer armazenado no cache do navegador.</p>
+              </div>
+            </article>
+
+            <article class="panel local-chat-panel">
+              <div class="panel-head">
+                <div><span class="section-kicker">Conversa</span><h3>Tutor FocoVest</h3></div>
+                <button class="text-btn" id="clearLocalChat">Limpar conversa</button>
+              </div>
+
+              <div class="quick-prompts" id="quickPrompts">
+                <button data-local-prompt="Explique este assunto de forma simples, com um exemplo e uma pergunta para eu responder.">Explicar assunto</button>
+                <button data-local-prompt="Crie 5 exercícios sobre o assunto que eu informar, sem mostrar o gabarito imediatamente.">Criar exercícios</button>
+                <button data-local-prompt="Crie um resumo curto e organizado do assunto que eu informar.">Gerar resumo</button>
+                <button data-local-prompt="Crie 8 flashcards de pergunta e resposta sobre o assunto que eu informar.">Criar flashcards</button>
+              </div>
+
+              <div class="local-chat-messages" id="localChatMessages" aria-live="polite">
+                <div class="chat-bubble assistant">
+                  <b>Tutor FocoVest</b>
+                  <p>Carregue o modelo e envie sua dúvida. Na primeira utilização, o navegador precisará baixar os arquivos da IA.</p>
+                </div>
+              </div>
+
+              <form id="localChatForm" class="local-chat-form">
+                <textarea id="localChatInput" rows="3" maxlength="3000" placeholder="Ex.: Explique função do segundo grau para o ENEM..."></textarea>
+                <div class="chat-form-actions">
+                  <small id="localChatHint">O modelo precisa ser carregado antes da primeira resposta.</small>
+                  <button class="primary-btn" type="submit" id="sendLocalChat">Enviar</button>
+                </div>
+              </form>
+            </article>
+          </div>
+        </section>
+
         <section class="view" id="view-redacao">
-          <div class="page-intro"><div><span class="section-kicker">Avaliação assistida</span><h2>Corretor de redação por IA</h2><p>Envie texto ou foto legível. A correção estima a nota e explica melhorias — não substitui uma banca oficial.</p></div><span class="ai-badge">✦ IA multimodal</span></div>
+          <div class="page-intro"><div><span class="section-kicker">Avaliação assistida</span><h2>Corretor de redação local</h2><p>Cole o texto ou envie um arquivo TXT. A análise é feita pela IA gratuita do navegador e não substitui uma banca oficial.</p></div><span class="ai-badge local-ai-badge">◆ IA local gratuita</span></div>
+
+          <article class="panel" style="margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;border-color:rgba(93,226,214,.3);background:linear-gradient(135deg,rgba(93,226,214,.08),rgba(124,92,255,.09)),var(--panel);">
+            <div style="flex:1;min-width:240px;">
+              <span class="section-kicker">Correção alternativa</span>
+              <h3 style="margin:5px 0 7px;">Corrija sua redação pelo ChatGPT</h3>
+              <p class="muted" style="margin:0;max-width:760px;">Abra o corretor compartilhado em uma nova aba para receber uma análise detalhada da sua redação. Pode ser necessário entrar em uma conta do ChatGPT.</p>
+            </div>
+            <a
+              class="primary-btn"
+              href="https://chatgpt.com/share/6a409c8a-948c-83e9-8e85-51d720f2824f"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Abrir corretor de redação no ChatGPT em uma nova aba"
+              style="display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap;"
+            >
+              ✦ Abrir corretor no ChatGPT ↗
+            </a>
+          </article>
 
           <div class="essay-grid">
             <article class="panel">
@@ -224,13 +316,13 @@
                   <input id="essayTheme" placeholder="Ex.: Desafios para a valorização..." required />
                 </label>
                 <label>Texto da redação
-                  <textarea id="essayText" rows="14" placeholder="Cole sua redação aqui ou anexe uma foto abaixo..."></textarea>
+                  <textarea id="essayText" rows="14" placeholder="Cole sua redação aqui ou anexe um arquivo TXT abaixo..."></textarea>
                 </label>
                 <label class="upload-zone" id="uploadZone">
-                  <input type="file" id="essayFile" accept="image/jpeg,image/png,image/webp,text/plain" />
+                  <input type="file" id="essayFile" accept="text/plain,.txt" />
                   <span class="upload-icon">⇧</span>
-                  <b>Anexar foto ou arquivo .txt</b>
-                  <small>JPG, PNG, WEBP ou TXT • máximo 8 MB</small>
+                  <b>Anexar arquivo .txt</b>
+                  <small>TXT • máximo 2 MB</small>
                   <em id="fileName"></em>
                 </label>
                 <label class="checkbox-row"><input type="checkbox" id="consentCheck" required /> Confirmo que removi dados pessoais sensíveis do texto.</label>
@@ -239,8 +331,8 @@
             </article>
 
             <article class="panel correction-result" id="correctionPanel">
-              <div class="empty-state" id="essayEmpty"><span>✦</span><h3>Sua análise aparecerá aqui</h3><p>A IA avaliará estrutura, argumentos, coesão, domínio da norma-padrão e critérios específicos da banca escolhida.</p></div>
-              <div id="essayLoading" class="loading-state hidden"><div class="spinner"></div><h3>Analisando sua redação...</h3><p>Verificando critérios, repertório, coerência e oportunidades de reescrita.</p></div>
+              <div class="empty-state" id="essayEmpty"><span>✦</span><h3>Sua análise aparecerá aqui</h3><p>A IA local avaliará estrutura, argumentos, coesão, domínio da norma-padrão e critérios gerais da banca escolhida.</p></div>
+              <div id="essayLoading" class="loading-state hidden"><div class="spinner"></div><h3>Analisando sua redação...</h3><p id="essayLoadingText">Verificando critérios, repertório, coerência e oportunidades de reescrita.</p></div>
               <div id="essayResult" class="hidden"></div>
             </article>
           </div>
@@ -283,5 +375,6 @@
 
   <input type="file" id="importFile" accept="application/json" hidden />
   <script src="app.js"></script>
+  <script type="module" src="tutor-ia.js"></script>
 </body>
 </html>

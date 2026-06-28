@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Organizador de estudos para ENEM e ITA com cronograma, revisão espaçada, simulados, videoaulas e correção de redação por IA." />
+  <meta name="theme-color" content="#0b1020" />
+  <title>FocoVest — Organizador ENEM & ITA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-mark">FV</div>
+        <div><strong>FocoVest</strong><span>ENEM & ITA</span></div>
+      </div>
+
+      <nav class="nav" aria-label="Navegação principal">
+        <button class="nav-item active" data-view="dashboard"><span>◫</span> Dashboard</button>
+        <button class="nav-item" data-view="cronograma"><span>▦</span> Cronograma</button>
+        <button class="nav-item" data-view="trilhas"><span>✓</span> Trilhas e checklist</button>
+        <button class="nav-item" data-view="revisao"><span>↻</span> Revisão Anki</button>
+        <button class="nav-item" data-view="simulados"><span>◉</span> Simulados e provas</button>
+        <button class="nav-item" data-view="aulas"><span>▶</span> Videoaulas gratuitas</button>
+        <button class="nav-item" data-view="redacao"><span>✦</span> Corretor de redação IA</button>
+        <button class="nav-item" data-view="ferramentas"><span>⌁</span> Ferramentas</button>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <div class="exam-pill"><span id="sidebarExam">ENEM</span><button id="quickSwitchExam" title="Trocar prova">⇄</button></div>
+        <button class="ghost-btn full" id="exportData">Exportar progresso</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <button class="icon-btn menu-btn" id="menuBtn" aria-label="Abrir menu">☰</button>
+        <div>
+          <p class="eyebrow" id="todayLabel"></p>
+          <h1 id="viewTitle">Dashboard</h1>
+        </div>
+        <div class="top-actions">
+          <div class="streak-chip">🔥 <strong id="streakValue">0</strong> dias</div>
+          <button class="primary-btn small" data-open-view="cronograma">+ Planejar estudo</button>
+        </div>
+      </header>
+
+      <div class="content">
+        <section class="view active" id="view-dashboard">
+          <div class="hero-card">
+            <div>
+              <span class="badge">Seu plano para <b id="heroExam">ENEM</b></span>
+              <h2>Estude com método, revise no momento certo e transforme erros em pontos.</h2>
+              <p id="heroMessage">Seu painel combina planejamento, prática deliberada, revisão espaçada e análise de desempenho.</p>
+              <div class="hero-actions">
+                <button class="primary-btn" data-open-view="cronograma">Ver plano de hoje</button>
+                <button class="secondary-btn" data-open-view="revisao">Revisar agora</button>
+              </div>
+            </div>
+            <div class="goal-ring-wrap">
+              <div class="goal-ring" id="goalRing"><span><b id="overallPercent">0%</b><small>concluído</small></span></div>
+              <p>Meta semanal: <b id="weeklyGoalText">10h</b></p>
+            </div>
+          </div>
+
+          <div class="metric-grid">
+            <article class="metric-card"><span class="metric-icon">⏱</span><div><p>Horas estudadas</p><strong id="metricHours">0h</strong><small id="metricHoursHint">esta semana</small></div></article>
+            <article class="metric-card"><span class="metric-icon">🎯</span><div><p>Taxa de acerto</p><strong id="metricAccuracy">0%</strong><small id="metricAccuracyHint">sem simulados</small></div></article>
+            <article class="metric-card"><span class="metric-icon">🧠</span><div><p>Revisões pendentes</p><strong id="metricReviews">0</strong><small>para hoje</small></div></article>
+            <article class="metric-card"><span class="metric-icon">📈</span><div><p>Projeção</p><strong id="metricProjection">—</strong><small id="metricProjectionHint">faça simulados</small></div></article>
+          </div>
+
+          <div class="dashboard-grid">
+            <article class="panel span-2">
+              <div class="panel-head"><div><span class="section-kicker">Consistência</span><h3>Tempo de estudo — últimos 7 dias</h3></div><span class="muted" id="weeklyTotalLabel">0h no período</span></div>
+              <div class="bar-chart" id="studyChart"></div>
+            </article>
+            <article class="panel">
+              <div class="panel-head"><div><span class="section-kicker">Próximo passo</span><h3>Fila inteligente</h3></div></div>
+              <div class="smart-queue" id="smartQueue"></div>
+            </article>
+            <article class="panel">
+              <div class="panel-head"><div><span class="section-kicker">Diagnóstico</span><h3>Desempenho por matéria</h3></div></div>
+              <div class="subject-bars" id="subjectPerformance"></div>
+            </article>
+            <article class="panel span-2">
+              <div class="panel-head"><div><span class="section-kicker">Método completo</span><h3>Funil de aprendizagem</h3></div><span class="muted">7 etapas por assunto</span></div>
+              <div class="funnel" id="learningFunnel"></div>
+            </article>
+          </div>
+        </section>
+
+        <section class="view" id="view-cronograma">
+          <div class="split-layout">
+            <article class="panel planner-card">
+              <div class="panel-head"><div><span class="section-kicker">Configuração</span><h3>Gerar cronograma personalizado</h3></div></div>
+              <form id="planForm" class="form-grid">
+                <label>Prova
+                  <select id="examSelect"><option value="ENEM">ENEM</option><option value="ITA">ITA</option></select>
+                </label>
+                <label>Data da prova
+                  <input type="date" id="examDate" required />
+                </label>
+                <label>Horas por dia
+                  <input type="number" id="hoursPerDay" min="0.5" max="12" step="0.5" value="2" required />
+                </label>
+                <label>Dias por semana
+                  <select id="daysPerWeek"><option>3</option><option>4</option><option selected>5</option><option>6</option><option>7</option></select>
+                </label>
+                <label class="full-field">Prioridade atual
+                  <select id="prioritySubject"></select>
+                </label>
+                <label class="full-field">Meta principal
+                  <input id="mainGoal" value="Aumentar a nota com consistência e corrigir lacunas" maxlength="120" />
+                </label>
+                <button class="primary-btn full-field" type="submit">Gerar plano de 8 semanas</button>
+              </form>
+              <div class="planner-tip"><b>Como o plano funciona:</b> assuntos fracos recebem mais blocos; revisões são inseridas em 1, 3, 7, 14 e 30 dias; toda semana termina com questões e diagnóstico.</div>
+            </article>
+
+            <article class="panel">
+              <div class="panel-head"><div><span class="section-kicker">Hoje</span><h3>Blocos de estudo</h3></div><button class="text-btn" id="addStudyBlock">+ bloco</button></div>
+              <div id="todaySchedule" class="timeline"></div>
+            </article>
+          </div>
+
+          <article class="panel calendar-panel">
+            <div class="panel-head"><div><span class="section-kicker">Visão geral</span><h3>Plano das próximas semanas</h3></div><div class="filter-row"><button class="chip active" data-week-filter="all">Tudo</button><button class="chip" data-week-filter="pending">Pendente</button><button class="chip" data-week-filter="done">Concluído</button></div></div>
+            <div id="weeklyPlan" class="week-plan"></div>
+          </article>
+        </section>
+
+        <section class="view" id="view-trilhas">
+          <div class="page-intro">
+            <div><span class="section-kicker">Aprendizagem ativa</span><h2>Trilhas por matéria</h2><p>Cada assunto percorre aula, resumo, autoexplicação, exercícios, caderno de erros, revisão e simulado.</p></div>
+            <div class="search-box"><input id="topicSearch" placeholder="Buscar assunto..." /><span>⌕</span></div>
+          </div>
+          <div class="subject-tabs" id="subjectTabs"></div>
+          <div id="topicList" class="topic-list"></div>
+        </section>
+
+        <section class="view" id="view-revisao">
+          <div class="page-intro"><div><span class="section-kicker">Repetição espaçada</span><h2>Revisão estilo Anki</h2><p>Os intervalos se adaptam à sua resposta. Errou? O cartão volta cedo. Acertou com facilidade? O intervalo aumenta.</p></div><button class="secondary-btn" id="newCardBtn">+ Novo cartão</button></div>
+
+          <div class="review-stats">
+            <div><strong id="dueCards">0</strong><span>Pendentes hoje</span></div>
+            <div><strong id="learnedCards">0</strong><span>Em aprendizagem</span></div>
+            <div><strong id="matureCards">0</strong><span>Consolidados</span></div>
+            <div><strong id="retentionRate">0%</strong><span>Retenção estimada</span></div>
+          </div>
+
+          <div class="flashcard-stage">
+            <div class="flashcard" id="flashcard">
+              <div class="card-meta"><span id="cardSubject">Sem cartões</span><span id="cardInterval">—</span></div>
+              <div class="card-content">
+                <span class="card-label" id="cardSideLabel">PERGUNTA</span>
+                <h3 id="cardFront">Crie cartões a partir dos assuntos estudados.</h3>
+                <p id="cardBack" class="hidden"></p>
+              </div>
+              <button class="primary-btn" id="showAnswerBtn">Mostrar resposta</button>
+              <div class="answer-actions hidden" id="answerActions">
+                <button data-quality="1"><b>Errei</b><small>1 min</small></button>
+                <button data-quality="2"><b>Difícil</b><small>1 dia</small></button>
+                <button data-quality="3"><b>Bom</b><small>3 dias</small></button>
+                <button data-quality="4"><b>Fácil</b><small>7 dias</small></button>
+              </div>
+            </div>
+          </div>
+
+          <article class="panel">
+            <div class="panel-head"><div><span class="section-kicker">Fila</span><h3>Próximas revisões</h3></div></div>
+            <div id="reviewQueue" class="table-list"></div>
+          </article>
+        </section>
+
+        <section class="view" id="view-simulados">
+          <div class="page-intro"><div><span class="section-kicker">Treino de prova</span><h2>Simulados e provas antigas</h2><p>Registre seus resultados, acompanhe evolução e acesse as provas oficiais.</p></div><button class="primary-btn" id="startQuickQuiz">Iniciar simulado rápido</button></div>
+
+          <div class="sim-grid">
+            <article class="panel">
+              <div class="panel-head"><div><span class="section-kicker">Gerador</span><h3>Novo simulado</h3></div></div>
+              <form id="mockForm" class="form-grid">
+                <label>Matéria<select id="mockSubject"></select></label>
+                <label>Quantidade<select id="mockQuestions"><option>5</option><option selected>10</option><option>20</option><option>45</option><option>90</option></select></label>
+                <label>Tempo (min)<input id="mockTime" type="number" min="5" value="30" /></label>
+                <label>Dificuldade<select id="mockDifficulty"><option>Mista</option><option>Base</option><option>Intermediária</option><option>Avançada</option></select></label>
+                <button class="secondary-btn full-field" type="submit">Criar sessão de treino</button>
+              </form>
+            </article>
+            <article class="panel">
+              <div class="panel-head"><div><span class="section-kicker">Evolução</span><h3>Últimos resultados</h3></div></div>
+              <div id="mockHistory" class="mock-history"></div>
+            </article>
+          </div>
+
+          <article class="panel">
+            <div class="panel-head"><div><span class="section-kicker">Fontes oficiais</span><h3>Provas antigas e gabaritos</h3></div><span class="verified">✓ links oficiais</span></div>
+            <div id="officialExams" class="resource-grid"></div>
+          </article>
+        </section>
+
+        <section class="view" id="view-aulas">
+          <div class="page-intro"><div><span class="section-kicker">Conteúdo gratuito</span><h2>Biblioteca de videoaulas</h2><p>Aulas e playlists gratuitas selecionadas por matéria. Use os filtros e marque o conteúdo como estudado.</p></div><div class="search-box"><input id="videoSearch" placeholder="Buscar aula ou matéria..." /><span>⌕</span></div></div>
+          <div class="filter-row wrap" id="videoFilters"></div>
+          <div id="videoLibrary" class="video-grid"></div>
+        </section>
+
+        <section class="view" id="view-redacao">
+          <div class="page-intro"><div><span class="section-kicker">Avaliação assistida</span><h2>Corretor de redação por IA</h2><p>Envie texto ou foto legível. A correção estima a nota e explica melhorias — não substitui uma banca oficial.</p></div><span class="ai-badge">✦ IA multimodal</span></div>
+
+          <div class="essay-grid">
+            <article class="panel">
+              <form id="essayForm" class="essay-form">
+                <div class="segmented" id="essayModelTabs">
+                  <button type="button" class="active" data-model="ENEM">ENEM</button>
+                  <button type="button" data-model="FUVEST">FUVEST</button>
+                  <button type="button" data-model="ITA">ITA</button>
+                </div>
+                <label>Tema da redação
+                  <input id="essayTheme" placeholder="Ex.: Desafios para a valorização..." required />
+                </label>
+                <label>Texto da redação
+                  <textarea id="essayText" rows="14" placeholder="Cole sua redação aqui ou anexe uma foto abaixo..."></textarea>
+                </label>
+                <label class="upload-zone" id="uploadZone">
+                  <input type="file" id="essayFile" accept="image/jpeg,image/png,image/webp,text/plain" />
+                  <span class="upload-icon">⇧</span>
+                  <b>Anexar foto ou arquivo .txt</b>
+                  <small>JPG, PNG, WEBP ou TXT • máximo 8 MB</small>
+                  <em id="fileName"></em>
+                </label>
+                <label class="checkbox-row"><input type="checkbox" id="consentCheck" required /> Confirmo que removi dados pessoais sensíveis do texto.</label>
+                <button class="primary-btn" type="submit" id="correctEssayBtn">✦ Corrigir redação detalhadamente</button>
+              </form>
+            </article>
+
+            <article class="panel correction-result" id="correctionPanel">
+              <div class="empty-state" id="essayEmpty"><span>✦</span><h3>Sua análise aparecerá aqui</h3><p>A IA avaliará estrutura, argumentos, coesão, domínio da norma-padrão e critérios específicos da banca escolhida.</p></div>
+              <div id="essayLoading" class="loading-state hidden"><div class="spinner"></div><h3>Analisando sua redação...</h3><p>Verificando critérios, repertório, coerência e oportunidades de reescrita.</p></div>
+              <div id="essayResult" class="hidden"></div>
+            </article>
+          </div>
+        </section>
+
+        <section class="view" id="view-ferramentas">
+          <div class="page-intro"><div><span class="section-kicker">Foco e retenção</span><h2>Ferramentas de estudo</h2><p>Recursos para aplicar prática de recuperação, interleaving, gestão de erros e descanso planejado.</p></div></div>
+          <div class="tools-grid">
+            <article class="panel pomodoro-card">
+              <span class="section-kicker">Pomodoro adaptável</span><h3>Bloco de foco</h3>
+              <div class="timer" id="timerDisplay">25:00</div>
+              <div class="timer-presets"><button data-minutes="25" class="active">25 min</button><button data-minutes="50">50 min</button><button data-minutes="90">90 min</button></div>
+              <div class="timer-actions"><button class="primary-btn" id="timerStart">Iniciar</button><button class="secondary-btn" id="timerReset">Reiniciar</button></div>
+            </article>
+            <article class="panel">
+              <span class="section-kicker">Recuperação ativa</span><h3>Folha em branco</h3>
+              <p class="muted">Sem consultar o material, escreva tudo que lembra. Depois compare e registre as lacunas.</p>
+              <textarea id="blankPage" rows="10" placeholder="O que você consegue explicar de memória?"></textarea>
+              <button class="secondary-btn full" id="saveBlankPage">Salvar como autoexplicação</button>
+            </article>
+            <article class="panel">
+              <span class="section-kicker">Caderno de erros</span><h3>Transforme erro em revisão</h3>
+              <form id="errorForm" class="mini-form"><select id="errorSubject"></select><input id="errorTopic" placeholder="Assunto" required /><textarea id="errorReason" rows="4" placeholder="Por que errei? Qual regra evita repetir?" required></textarea><button class="secondary-btn" type="submit">Adicionar erro</button></form>
+            </article>
+            <article class="panel">
+              <span class="section-kicker">Memória de longo prazo</span><h3>Protocolo de fixação</h3>
+              <ol class="method-list"><li><b>Pré-teste:</b> tente responder antes da aula.</li><li><b>Estudo ativo:</b> faça perguntas durante a explicação.</li><li><b>Autoexplicação:</b> ensine o assunto sem olhar.</li><li><b>Prática:</b> resolva questões variadas e cronometradas.</li><li><b>Feedback:</b> classifique cada erro por causa.</li><li><b>Revisão:</b> use intervalos crescentes.</li><li><b>Simulado:</b> recupere sob pressão semelhante à prova.</li></ol>
+            </article>
+          </div>
+          <article class="panel"><div class="panel-head"><div><span class="section-kicker">Registro</span><h3>Caderno de erros</h3></div></div><div id="errorNotebook" class="table-list"></div></article>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <div class="modal" id="genericModal" aria-hidden="true">
+    <div class="modal-backdrop" data-close-modal></div>
+    <div class="modal-card"><button class="modal-close" data-close-modal>×</button><div id="modalContent"></div></div>
+  </div>
+
+  <input type="file" id="importFile" accept="application/json" hidden />
+  <script src="app.js"></script>
+</body>
+</html>

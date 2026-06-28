@@ -1,0 +1,9 @@
+{
+  "name": "focovest-organizador-estudos",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Organizador de estudos para ENEM e ITA",
+  "scripts": {
+    "dev": "npx vercel dev"
+  }
+}
